@@ -1,0 +1,14 @@
+{
+  "name": "health-monitoring",
+  "version": "1.0.0",
+  "description": "Health Monitoring and Early Warning System",
+  "scripts": {
+    "start": "start http://localhost:8081 && mvn spring-boot:run",
+    "install": "mvn install",
+    "build": "mvn package",
+    "dev": "start http://localhost:8081 && mvn spring-boot:run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

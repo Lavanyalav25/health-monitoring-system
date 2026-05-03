@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Dashboard - HealthGuard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="padding-top: 72px">
+    <div id="header-placeholder"></div>
+
+    <div class="platform-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar d-none d-lg-flex">
+            <div class="mb-5 px-3">
+                <small class="text-muted fw-bold text-uppercase ls-1 d-block mb-3">Main Navigation</small>
+                <nav>
+                    <a href="dashboard.html" class="sidebar-nav-link active">
+                        <i class="fa-solid fa-gauge-high"></i> Overview
+                    </a>
+                    <a href="add_health_data.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-plus-circle"></i> Add Vitals
+                    </a>
+                    <a href="records.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-history"></i> History
+                    </a>
+                    <a href="alerts.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-bell"></i> Alerts
+                    </a>
+                </nav>
+            </div>
+
+            <div class="mt-auto px-3">
+                <small class="text-muted fw-bold text-uppercase ls-1 d-block mb-3">Account</small>
+                <nav>
+                    <a href="profile.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-user-circle"></i> My Account
+                    </a>
+                    <a href="#" onclick="logout()" class="sidebar-nav-link text-danger">
+                        <i class="fa-solid fa-sign-out-alt"></i> Sign Out
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+                <div>
+                    <h1 class="fw-bold mb-1" id="dash-title">Hello, User</h1>
+                    <p class="text-muted mb-0">Here's your health summary for today.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="add_health_data.html" class="btn btn-primary px-4 shadow-sm fw-bold">+ Record New Data</a>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card p-4 border-0">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper mb-0 me-3 bg-primary-light" style="width: 50px; height: 50px; border-radius: 12px;">
+                                <i class="fa-solid fa-clipboard-list fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase">Total Records</small>
+                                <h4 class="fw-bold mb-0" id="total-records">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 border-0">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper mb-0 me-3 bg-danger-subtle text-danger" style="width: 50px; height: 50px; border-radius: 12px; background: rgba(218, 30, 40, 0.1)">
+                                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase">Total Alerts History</small>
+                                <h4 class="fw-bold mb-0 text-danger" id="total-alerts">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 border-0">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper mb-0 me-3 bg-success-subtle text-success" style="width: 50px; height: 50px; border-radius: 12px; background: rgba(36, 161, 72, 0.1)">
+                                <i class="fa-solid fa-heart fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-bold text-uppercase">Latest Health Status</small>
+                                <h4 class="fw-bold mb-0 text-success" id="latest-status">NORMAL</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Visuals -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-8">
+                    <div class="card p-4 border-0 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0">Health Metrics Trend</h5>
+                            <ul class="nav nav-pills nav-pills-custom small">
+                                <li class="nav-item"><a class="nav-link active py-1 px-3" href="#">Last 10 Records</a></li>
+                            </ul>
+                        </div>
+                        <canvas id="tempChart" style="max-height: 400px;"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card p-4 border-0 h-100">
+                        <h5 class="fw-bold mb-4">Pulse Analysis</h5>
+                        <div class="py-4 text-center">
+                            <canvas id="hrChart" style="max-height: 250px;"></canvas>
+                        </div>
+                        <div class="mt-auto pt-4 border-top">
+                            <h6 class="fw-bold small mb-2 text-uppercase">Health Insights</h6>
+                            <p class="text-muted small mb-0">Your heart rate is within the optimal zone. Keep up the good work!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="js/auth.js?v=1.1"></script>
+    <script>
+        const user = checkAuth();
+        document.getElementById('header-placeholder').innerHTML = getHeaderHTML('dashboard');
+        document.getElementById('footer-placeholder').innerHTML = getFooterHTML();
+        document.getElementById('dash-title').innerText = `Hello, ${user.name.split(' ')[0]}`;
+
+        async function loadDashboardData() {
+            try {
+                const statsResponse = await fetch(`/api/health/stats/${user.id}`);
+                const stats = await statsResponse.json();
+                document.getElementById('total-records').innerText = stats.totalRecords;
+                document.getElementById('total-alerts').innerText = stats.totalAlerts;
+
+                const historyResponse = await fetch(`/api/health/history/${user.id}`);
+                const records = await historyResponse.json();
+                
+                if (!records || records.length === 0) return;
+
+                // Sync Latest Status Card (As per Prompt)
+                const latest = records[0];
+                const isAbnormal = latest.temperature > 38 || latest.heartRate > 100 || latest.oxygenLevel < 95;
+                const statusCard = document.getElementById('latest-status');
+                statusCard.innerText = isAbnormal ? 'ABNORMAL' : 'NORMAL';
+                statusCard.className = `fw-bold mb-0 ${isAbnormal ? 'text-danger' : 'text-success'}`;
+
+                const reversed = [...records].reverse().slice(-10);
+                const dates = reversed.map(r => {
+                    const d = r.date ? new Date(r.date.replace(' ', 'T')) : new Date();
+                    return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                });
+
+                new Chart(document.getElementById('tempChart'), {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Body Temp (°C)',
+                            data: reversed.map(r => r.temperature),
+                            borderColor: '#0f62fe',
+                            backgroundColor: 'rgba(15, 98, 254, 0.05)',
+                            fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        plugins: { legend: { display: false } }, 
+                        scales: { y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.03)' } }, x: { grid: { display: false } } } 
+                    }
+                });
+
+                new Chart(document.getElementById('hrChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Current BPM', 'Goal'],
+                        datasets: [{
+                            data: [reversed[0].heartRate, 140 - reversed[0].heartRate],
+                            backgroundColor: ['#6f22d2', '#f1f4f9'],
+                            borderWidth: 0, cutout: '85%'
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        plugins: { legend: { display: false } },
+                        animation: { animateRotate: true, duration: 2000 }
+                    }
+                });
+
+            } catch (err) { console.error(err); }
+        }
+        loadDashboardData();
+    </script>
+</body>
+</html>

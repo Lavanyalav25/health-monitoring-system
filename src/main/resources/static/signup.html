@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Health Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+</head>
+<body class="auth-bg">
+    <!-- Bootstrap Flex Centering -->
+    <div class="d-flex justify-content-center align-items-center vh-100 p-3">
+        <div class="auth-card">
+            <div class="logo-section text-center mb-4">
+                <i class="fa-solid fa-user-plus"></i>
+                <h2 class="fw-bold text-dark mb-1">Create Account</h2>
+                <p class="text-muted small">Join the health monitoring fleet</p>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="name" placeholder="John Doe" required>
+                    <label for="name"><i class="fa-solid fa-user me-2"></i>Full Name</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                    <label for="email"><i class="fa-solid fa-envelope me-2"></i>Email address</label>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password" placeholder="Pass" required>
+                            <label for="password">Password</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Conf" required>
+                            <label for="confirmPassword">Confirm</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="confirmError" class="validation-msg text-center mb-3">Passwords do not match!</div>
+
+                <button type="submit" class="btn btn-primary w-100 shadow-sm">INITIALIZE ACCOUNT</button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <p class="mb-0 text-muted small">Already registered? 
+                    <a href="login.html" class="link-primary">Login Here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js?v=1.1"></script>
+    <script>
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (pass !== confirm) {
+                document.getElementById('confirmError').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('confirmError').style.display = 'none';
+            }
+
+            await signup(name, email, pass);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health History - HealthGuard Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
+</head>
+<body style="padding-top: 72px">
+    <div id="header-placeholder"></div>
+
+    <div class="platform-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar d-none d-lg-flex">
+            <div class="mb-5 px-3">
+                <small class="text-muted fw-bold text-uppercase ls-1 d-block mb-3">Main Navigation</small>
+                <nav>
+                    <a href="dashboard.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-gauge-high"></i> Overview
+                    </a>
+                    <a href="add_health_data.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-plus-circle"></i> Add Vitals
+                    </a>
+                    <a href="records.html" class="sidebar-nav-link active">
+                        <i class="fa-solid fa-history"></i> History
+                    </a>
+                    <a href="alerts.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-bell"></i> Alerts
+                    </a>
+                </nav>
+            </div>
+            <div class="mt-auto px-3">
+                <nav>
+                    <a href="profile.html" class="sidebar-nav-link">
+                        <i class="fa-solid fa-user-circle"></i> My Account
+                    </a>
+                    <a href="#" onclick="logout()" class="sidebar-nav-link text-danger">
+                        <i class="fa-solid fa-sign-out-alt"></i> Sign Out
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5">
+                <div>
+                    <h1 class="fw-bold text-primary mb-1">Health Records History</h1>
+                    <p class="text-muted mb-0">Total archive of your medical vital statistics.</p>
+                </div>
+                <button onclick="window.print()" class="btn btn-outline-dark px-4 bg-white mt-3 mt-md-0 fw-bold border-2">
+                    <i class="fa-solid fa-file-pdf me-2"></i> Export Medical Report
+                </button>
+            </div>
+            
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4 py-3">Timestamp</th>
+                                <th>Temp (°C)</th>
+                                <th>Pulse (BPM)</th>
+                                <th>Oxygen (%)</th>
+                                <th class="pe-4 text-end">Health Assessment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-table">
+                            <tr><td colspan="5" class="py-5 text-center"><div class="spinner-border text-primary"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="js/auth.js?v=1.1"></script>
+    <script>
+        const user = checkAuth();
+        document.getElementById('header-placeholder').innerHTML = getHeaderHTML('records');
+        document.getElementById('footer-placeholder').innerHTML = getFooterHTML();
+
+        async function loadRecords() {
+            try {
+                const response = await fetch(`/api/health/history/${user.id}`);
+                const records = await response.json();
+                const table = document.getElementById('records-table');
+
+                if (!records || records.length === 0) {
+                    table.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">No data points recovered from history.</td></tr>`;
+                    return;
+                }
+
+                table.innerHTML = records.map(r => {
+                    const isAbnormal = r.temperature > 38 || r.heartRate > 100 || r.oxygenLevel < 95;
+                    const dateStr = r.date ? new Date(r.date.replace(' ', 'T')).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A';
+                    
+                    return `
+                        <tr>
+                            <td class="ps-4 text-muted small fw-bold">${dateStr}</td>
+                            <td class="fw-bold fs-5 ${r.temperature > 38 ? 'text-danger' : 'text-primary'}">${r.temperature}</td>
+                            <td class="fw-bold fs-5 ${r.heartRate > 100 ? 'text-danger' : 'text-dark'}">${r.heartRate}</td>
+                            <td class="fw-bold fs-5 ${r.oxygenLevel < 95 ? 'text-danger' : 'text-success'}">${r.oxygenLevel}</td>
+                            <td class="pe-4 text-end">
+                                <span class="badge ${isAbnormal ? 'bg-danger-subtle text-danger border border-danger' : 'bg-success-subtle text-success border border-success'} px-3 py-2">
+                                    ${isAbnormal ? 'Warning: Abnormal' : 'Normal: Healthy'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) { notify('Connectivity issue.', 'danger'); }
+        }
+        loadRecords();
+    </script>
+</body>
+</html>
