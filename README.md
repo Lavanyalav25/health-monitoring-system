@@ -1,4 +1,4 @@
-# Health Monitoring & Early Warning System (HealthGuard)
+# Health Monitoring System (HealthGuard)
 
 ![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen.svg)
